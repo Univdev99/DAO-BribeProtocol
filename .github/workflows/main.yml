@@ -1,0 +1,26 @@
+name: CI
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the dev branch
+  push:
+    branches: [development, main, master, feat/*, fix/*]
+    paths: ["**.js", "**.sol"]
+  pull_request:
+    branches: [development, main, master, feat/*, fix/*]
+    paths: ["**.js", "**.sol"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Tests
+        env:
+          ALCHEMY_KEY: ${{ secrets.ALCHEMY_KEY }}
+        run: |
+          npm install --no-lockfile
+          npm run prettier:solidity
+          npx hardhat typechain
+          npm test
